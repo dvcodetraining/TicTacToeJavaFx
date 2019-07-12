@@ -1,0 +1,9 @@
+.root
+{
+	-fx-background-color: dimgray;
+}
+.button-tiles
+{
+	-fx-font: normal bold 40px 'papyrus';
+	-fx-background-color: black;
+}
