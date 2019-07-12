@@ -1,18 +1,17 @@
 import java.util.ArrayList;
-//mine javaFX
 
 public class Minimax
 {
 	// Player is AIPlayer and opponent is Human Player
 	private char playerAI, opponent;
-	// private TicTacToeBoard gameBoard;
 	public Action bestChoice;
 
 	public int endGameScore(TicTacToeBoard gameBoard)
 	{
+		int turn = gameBoard.getTurn();
 		if (gameBoard.whoWon() == playerAI)
 		{
-			return 10;
+			return 10 - turn; // makes it play the fastest route to win
 		} 
 		else if (gameBoard.whoWon() == opponent)
 		{
@@ -32,76 +31,39 @@ public class Minimax
 	public Minimax(TicTacToeBoard board, char playerAI)
 	{
 		this.playerAI = playerAI;
-		if (playerAI == 'O')
-		{
-			opponent = 'X';
-		} else
-		{
-			opponent = 'O';
-		}
+		opponent = playerAI == 'O' ? 'X' : 'O';
+	
 		// making new board
-		char[][] boardArrayChar = new char[3][3];
-		for (int i = 0; i < 3; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				boardArrayChar[i][j] = board.getArrayBoard()[i][j];
-			}
-		}
-		TicTacToeBoard receivedBoard = new TicTacToeBoard(boardArrayChar);
-		minimax(receivedBoard);
+		TicTacToeBoard newBoard = board.copy();
+		minimax(newBoard);
 	}
 
-	public int minimax(TicTacToeBoard boardR)
+	public int minimax(TicTacToeBoard board)
 	{
 		// making new board
-		char[][] boardArrayChar = new char[3][3];
-		for (int i = 0; i < 3; i++)
+		TicTacToeBoard newBoard = board.copy();
+		
+		if (newBoard.isGameOver())
 		{
-			for (int j = 0; j < 3; j++)
-			{
-				boardArrayChar[i][j] = boardR.getArrayBoard()[i][j];
-			}
-		}
-		TicTacToeBoard board = new TicTacToeBoard(boardArrayChar);
-		if (board.isGameOver())
-		{
-			return endGameScore(board);
+			return endGameScore(newBoard);
 		}
 
 		ArrayList<Integer> scores = new ArrayList<Integer>();
-		// ArrayList<Action> storeMoves = new ArrayList<Action>();
 
-		Action[] moves = board.possiblePlays();
-		// making new board
-		char[][] boardReceivedCharArray = new char[3][3];
-		for (int i = 0; i < 3; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				boardReceivedCharArray[i][j] = board.getArrayBoard()[i][j];
-			}
-		}
-
+		Action[] possibleMoves = newBoard.possiblePlays();
+		char player = newBoard.getPlayer();
+		
 		// populate array scores
-		for (int i = 0; i < moves.length; i++)
+		for (int i = 0; i < possibleMoves.length; i++)
 		{
-			int x = moves[i].getX();
-			int y = moves[i].getY();
-			char player = board.getPlayer();
-			char[][] copiedCharArray = new char[3][3];
-			for (int j = 0; j < 3; j++)
-			{
-				for (int k = 0; k < 3; k++)
-				{
-					copiedCharArray[j][k] = boardReceivedCharArray[j][k];
-				}
-			}
-			TicTacToeBoard possibleBoard = new TicTacToeBoard(copiedCharArray, player, x, y);
+			int x = possibleMoves[i].getX();
+			int y = possibleMoves[i].getY();
+			TicTacToeBoard possibleBoard = newBoard.copy();
+			possibleBoard.makeMove(player, x, y);
 			scores.add(minimax(possibleBoard));
 		}
 		scores.trimToSize();
-		char player = board.getPlayer();
+		
 		// Decide between choosing min or max Calculation
 		if (player == playerAI)
 		{
@@ -115,7 +77,7 @@ public class Minimax
 				{
 					max = (int) scoresArray[i];
 					maxScoreIsAt = i;
-					bestChoice = moves[i];
+					bestChoice = possibleMoves[i];
 				}
 			}
 			return (int) scoresArray[maxScoreIsAt];
@@ -131,7 +93,7 @@ public class Minimax
 				{
 					min = (int) scoresArray[i];
 					minScoreIsAt = i;
-					bestChoice = moves[i];
+					bestChoice = possibleMoves[i];
 				}
 			}
 			return (int) scoresArray[minScoreIsAt];

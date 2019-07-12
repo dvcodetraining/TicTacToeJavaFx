@@ -2,25 +2,23 @@ import java.util.ArrayList;
 
 public class TicTacToeBoard
 {
-	// fill board with spaces
 	private char[][] board;
-	private int turn;
-//	private char winner;
+	char winner;
 
 	public TicTacToeBoard()
 	{
-		turn = 0;
+	//	turn = 0;
 		board = new char[][]
 		{
 				{ ' ', ' ', ' ' },
 				{ ' ', ' ', ' ' },
-				{ ' ', ' ', ' ' }, };
+				{ ' ', ' ', ' ' }, 
+		};
 	}
 
 	public TicTacToeBoard(int turn, char[][] board)
 	{
 		this.board = board;
-		this.turn = turn;
 	}
 	public TicTacToeBoard(char[][] board)
 	{
@@ -33,19 +31,18 @@ public class TicTacToeBoard
 	}
 	/**
 	 * Performs deep copy of the object
-	 * @param board - TicTacToeBoard Object to be copied
 	 */
-	public TicTacToeBoard(TicTacToeBoard board)
+	public TicTacToeBoard copy()
 	{
-		this.board = new char[3][3];
+		char boardArray[][] = new char[3][3];
 		for (int i = 0; i < 3; i++)
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				this.board[i][j] = board.getArrayBoard()[i][j];
+				boardArray[i][j] = this.getArrayBoard()[i][j];
 			}
 		}
-		this.turn = board.getTurn();
+		return new TicTacToeBoard(boardArray);
 	}
 	
 	public int getTurn()
@@ -68,11 +65,6 @@ public class TicTacToeBoard
 		return this.board;
 	}
 
-	public void setTurn(int turn)
-	{
-		this.turn = turn;
-	}
-
 	public char[][] getBoard()
 	{
 		return board;
@@ -86,10 +78,9 @@ public class TicTacToeBoard
 	public void makeMove(char player, int x, int y)
 	{
 		this.board[x][y] = player;
-		this.turn++;
 	}
 	/**
-	 * prints Board on the console
+	 * prints Board on the console for testing
 	 */
 	public void printBoard()
 	{
@@ -121,16 +112,16 @@ public class TicTacToeBoard
 
 		for (int i = 0; i < 3; i++)
 		{
-			// check vertical lines
+			// check horizontal lines
 			if (board[i][0] == board[i][1] && board[i][0] == board[i][2] && board[i][1] != ' ')
 			{
-				// System.out.println("Game won by: " + board[i][1]);
+				winner = board[i][1];
 				return true;
 			}
-			// check horizontal lines
+			// check vertical lines
 			if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
 			{
-				// System.out.println("Game won by: " + board[0][i]);
+				winner = board[0][i];
 				return true;
 			}
 		}
@@ -138,12 +129,12 @@ public class TicTacToeBoard
 		if (((board[0][0] == board[1][1] && board[1][1] == board[2][2])
 				|| (board[0][2] == board[1][1] && board[1][1] == board[2][0])) && board[1][1] != ' ')
 		{
-			// System.out.println("Game won by " + board[1][1]);
+			winner = board[1][1];
 			return true;
 		}
 		if (this.getTurn() >= 9)
 		{
-			// System.out.println("Game draw by stalemate");
+			winner = ' '; // means the game is draw
 			return true;
 		} else
 		{
@@ -152,38 +143,14 @@ public class TicTacToeBoard
 
 	}
 
-	// make it simple CLEAN THE CODE
 	public char whoWon()
 	{
-		char a = ' ';
 		if (this.isGameOver())
 		{
-			for (int i = 0; i < 3; i++)
-			{
-				// check horizontal lines
-				if (board[i][0] == board[i][1] && board[i][0] == board[i][2] && board[i][1] != ' ')
-				{
-					return board[i][1];
-				}
-				// check vertical lines
-				else if (board[0][i] == board[1][i] && board[1][i] == board[2][i] && board[0][i] != ' ')
-				{
-					return board[0][i];
-				}
-			}
-			// check diagonals
-			if (((board[0][0] == board[1][1] && board[1][1] == board[2][2])
-					|| (board[0][2] == board[1][1] && board[1][1] == board[2][0])) && board[1][1] != ' ')
-			{
-				return board[1][1];
-			} else
-			{
-				return a;
-			}
+			return winner;
 		} else
 		{
-			System.exit(2);
-			return a;
+			return '-';
 		}
 	}
 
